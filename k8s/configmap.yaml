@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cardano-config
+  namespace: cardano
+data:
+  NODE_NETWORK: "mainnet"
+  NODE_PORT: "3001"
