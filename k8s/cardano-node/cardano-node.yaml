@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: cardano-node
+spec:
+  serviceName: cardano-node
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cardano-node
+  template:
+    metadata:
+      labels:
+        app: cardano-node
+    spec:
+      containers:
+        - name: cardano-node
+          image: inputoutput/cardano-node:8.1.2
+          args: ["run", "--config", "/config/config.json", "--topology", "/config/topology.json", "--database-path", "/data/db", "--socket-path", "/data/db/node.socket", "--host-addr", "0.0.0.0", "--port", "3001"]
+          ports:
+            - containerPort: 3001
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data
+            - name: config-volume
+              mountPath: /config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: cardano-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data-volume
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 10Gi

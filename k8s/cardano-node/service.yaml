@@ -1,0 +1,14 @@
+# service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: cardano-node
+spec:
+  selector:
+    app: cardano-node
+  ports:
+    - name: p2p
+      port: 3001
+      targetPort: 3001
+      protocol: TCP
+  type: NodePort

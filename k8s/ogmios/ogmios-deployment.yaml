@@ -1,0 +1,35 @@
+# ogmios/ogmios-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ogmios
+  namespace: cardano
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ogmios
+  template:
+    metadata:
+      labels:
+        app: ogmios
+    spec:
+      containers:
+      - name: ogmios
+        image: cardanosolutions/ogmios:latest
+        args:
+          - "--node-socket"
+          - "/ipc/node.socket"
+          - "--host"
+          - "0.0.0.0"
+          - "--port"
+          - "1337"
+        ports:
+        - containerPort: 1337
+        volumeMounts:
+        - name: node-ipc
+          mountPath: /ipc
+      volumes:
+      - name: node-ipc
+        persistentVolumeClaim:
+          claimName: cardano-node-node-ipc
