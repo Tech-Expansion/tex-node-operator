@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minswap-syncer
+  namespace: cardano
+  labels:
+    app: minswap-syncer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: minswap-syncer
+  template:
+    metadata:
+      labels:
+        app: minswap-syncer
+    spec:
+      containers:
+      - name: minswap-syncer
+        image: ghcr.io/minswap/syncer:latest # Cần xác nhận đúng image version
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: minswap-syncer-secret
+              key: DATABASE_URL
+        - name: CARDANO_NODE_SOCKET_PATH
+          value: /ipc/node.socket
+        volumeMounts:
+        - name: node-ipc
+          mountPath: /ipc
+      volumes:
+      - name: node-ipc
+        hostPath:
+          path: /var/cardano/ipc
+          type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minswap-syncer
+  namespace: cardano
+spec:
+  selector:
+    app: minswap-syncer
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  type: ClusterIP
