@@ -35,17 +35,3 @@ spec:
         hostPath:
           path: /var/cardano/ipc
           type: Directory
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: minswap-syncer
-  namespace: cardano
-spec:
-  selector:
-    app: minswap-syncer
-  ports:
-  - protocol: TCP
-    port: 8080
-    targetPort: 8080
-  type: ClusterIP
