@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: minswap-syncer
-        image: ghcr.io/minswap/syncer:latest # Cần xác nhận đúng image version
+        image: ghcr.io/minswap/syncer:latest 
         imagePullPolicy: IfNotPresent
         env:
         - name: DATABASE_URL
