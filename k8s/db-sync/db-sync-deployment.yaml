@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cardano-db-sync
+  labels:
+    app: cardano-db-sync
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cardano-db-sync
+  template:
+    metadata:
+      labels:
+        app: cardano-db-sync
+    spec:
+      containers:
+        - name: cardano-db-sync
+          image: inputoutput/cardano-db-sync:13.2.0
+          args: [
+            "--config", "/config/config.json",
+            "--socket-path", "/node-ipc/node.socket",
+            "--state-dir", "/var/lib/cardano-db-sync/state",
+            "--schema-dir", "/var/lib/cardano-db-sync/schema"
+          ]
+          env:
+            - name: POSTGRES_HOST
+              value: "postgres"
+            - name: POSTGRES_PORT
+              value: "5432"
+            - name: POSTGRES_USER
+              value: "postgres"
+            - name: POSTGRES_PASSWORD
+              value: "yourpassword"
+            - name: POSTGRES_DB
+              value: "syncer"
+          volumeMounts:
+            - name: config
+              mountPath: /config
+            - name: node-ipc
+              mountPath: /node-ipc
+            - name: db-sync-data
+              mountPath: /var/lib/cardano-db-sync
+      volumes:
+        - name: config
+          configMap:
+            name: db-sync-config
+        - name: node-ipc
+          persistentVolumeClaim:
+            claimName: node-ipc-pvc
+        - name: db-sync-data
+          persistentVolumeClaim:
+            claimName: db-sync-pvc
