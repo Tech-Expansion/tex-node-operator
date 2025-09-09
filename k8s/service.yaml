@@ -3,7 +3,7 @@ kind: Service
 metadata:
   name: cardano-node
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: cardano-node
   ports:
